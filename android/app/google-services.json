@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "10168453624",
+    "project_id": "ai-assistant-chat-8f294",
+    "storage_bucket": "ai-assistant-chat-8f294.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:10168453624:android:b60f358558c1d1345dee0d",
+        "android_client_info": {
+          "package_name": "com.example.ai_chatbot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLcX-gkoMwtHlojLD4GKX7aCyxXnj79Ns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

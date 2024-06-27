@@ -1,9 +1,14 @@
 import 'package:ai_chatbot/Clipper/AuthPageClipper.dart';
+import 'package:ai_chatbot/Provider/auth_service_provider.dart';
 import 'package:ai_chatbot/Screens/home_screen.dart';
 import 'package:ai_chatbot/Screens/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_chatbot/Components/auth_textfield.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -13,7 +18,12 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  bool _isPassword = true;
+
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _userNameController = TextEditingController();
+  TextEditingController _secondPassword = TextEditingController();
+  bool _isShowPassword = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,24 +46,25 @@ class _SignupScreenState extends State<SignupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 50.0, bottom: 30),
+                      padding: const EdgeInsets.only(top: 30.0, bottom: 30),
                       child: Image(image: AssetImage('assets/images/signup-image.png'), height: 250,),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
-                      child: Column(
+                      child: Consumer<AuthServiceProvider>(builder: (context, value, child) => Column(
                         children: [
-                          AuthTextField(hintText: 'Enter your email', icon: Icons.mail, onChanged: (value) {},),
+                          AuthTextField(hintText: 'Enter your email', icon: Icons.mail, controller: _emailController,),
                           SizedBox(height: 20,),
-                          AuthTextField(hintText: 'Username', icon: Icons.person, onChanged: (value) {},),
+                          AuthTextField(hintText: 'Username', icon: Icons.person,  controller: _userNameController),
                           SizedBox(height: 20,),
-                          AuthTextField(hintText: 'Enter Your Password', icon: Icons.key_outlined, isPassword: _isPassword, onChanged: (value) {}, suffixIcon: IconButton(icon: Icon(_isPassword ? Icons.visibility_off : Icons.visibility), onPressed: (){setState(() {
-                            _isPassword = !_isPassword;
+                          AuthTextField(hintText: 'Enter Your Password', icon: Icons.key_outlined, onChanged: (val){ print(_passwordController);}, showPassword: _isShowPassword,controller: _secondPassword, suffixIcon: IconButton(icon: Icon(_isShowPassword ? Icons.visibility_off : Icons.visibility), onPressed: (){setState(() {
+                            _isShowPassword = !_isShowPassword;
                           });},),),
                           SizedBox(height: 20,),
-                          AuthTextField(hintText: 'Re-enter your Password', icon: Icons.key_outlined, isPassword: _isPassword, onChanged: (value) {}, ),
+                          AuthTextField(hintText: 'Re-enter your Password', icon: Icons.key_outlined, onChanged: (val){ value.setIsSamePassword(_passwordController.text, _secondPassword.text); }, showPassword: _isShowPassword, controller: _passwordController,),
+                          value.isSamePassword ? Text('') : Text('Password did not match'),
                         ],
-                      ),
+                      ),),
                     ),
                     SizedBox(height: 20,),
                     RichText(
@@ -72,7 +83,33 @@ class _SignupScreenState extends State<SignupScreen> {
                             ]
                         )),
                     SizedBox(height: 20,),
-                    ElevatedButton(onPressed: (){ Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(),));}, child: Text('Sign Up', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll<Color>(Colors.black45)),),
+                    Consumer<AuthServiceProvider>(builder: (context, value, child) => ElevatedButton(onPressed: () async{
+                      try{
+                          User? user = await value.signUpWithEmail(_emailController.text, _userNameController.text, _passwordController.text);
+
+                          if(user != null){
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Welcome SignUp Sucessful')));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(),));
+                            _emailController.clear();
+                            _passwordController.clear();
+                            _userNameController.clear();
+                          } else {
+                            if(value.isErrorMessage){
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.signUpErrorMessage!)));
+                            }
+                        }
+                      }  catch(e){
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Something Wrong Happens!')));
+                      }
+
+                    },
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll<Color>(Colors.black45)),),),
                     Divider(thickness: 2, color: Colors.blueGrey,indent: 100, endIndent: 100,height: 30,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

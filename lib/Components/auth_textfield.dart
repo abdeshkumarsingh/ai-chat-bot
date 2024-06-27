@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class AuthTextField extends StatelessWidget {
   final String hintText;
   final IconData icon;
-  final bool isPassword;
+  final bool showPassword;
   final TextEditingController? controller;
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onChanged;
   final IconButton? suffixIcon;
 
 
@@ -14,14 +14,14 @@ class AuthTextField extends StatelessWidget {
     this.controller,
     required this.hintText,
     required this.icon,
-    this.isPassword = false,
-    required this.onChanged,
+    this.showPassword = false,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      obscureText: isPassword,
+      obscureText: showPassword,
       onChanged: onChanged,
       controller: controller,
       decoration: InputDecoration(

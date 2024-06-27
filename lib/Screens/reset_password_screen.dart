@@ -1,6 +1,9 @@
 import 'package:ai_chatbot/Clipper/AuthPageClipper.dart';
 import 'package:ai_chatbot/Components/auth_textfield.dart';
+import 'package:ai_chatbot/Provider/auth_service_provider.dart';
+import 'package:ai_chatbot/Screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -11,6 +14,8 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _isPassword = false;
+  TextEditingController _emailcontroller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,12 +46,30 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                     child: Column(
                       children: [
-                        AuthTextField(hintText: 'Enter your email', icon: Icons.mail, onChanged: (value) {},),
+                        AuthTextField(hintText: 'Enter your email', icon: Icons.mail, onChanged: (value) {}, controller: _emailcontroller,),
                         SizedBox(height: 20,),
                         ],
                     ),
                   ),
-                  ElevatedButton(onPressed: (){}, child: Text('Reset', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll<Color>(Colors.black45)),),
+                  Consumer<AuthServiceProvider>(builder: (context, value, child) => ElevatedButton(onPressed: () async{
+                    try {
+                      await value.resetPassword(_emailcontroller.text);
+                      if (value.isErrorMessage) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(value.resetPasswordMessage)),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Password reset email sent successfully.')),
+                        );
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),));
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('An unexpected error occurred. Please try again later.')),
+                      );
+                    }
+                  }, child: Text('Reset', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll<Color>(Colors.black45)),),)
                 ],
               ),
             ],

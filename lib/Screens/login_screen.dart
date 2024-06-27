@@ -1,9 +1,15 @@
 import 'package:ai_chatbot/Clipper/AuthPageClipper.dart';
 import 'package:ai_chatbot/Components/auth_textfield.dart';
+import 'package:ai_chatbot/Provider/auth_service_provider.dart';
+import 'package:ai_chatbot/Screens/home_screen.dart';
 import 'package:ai_chatbot/Screens/reset_password_screen.dart';
 import 'package:ai_chatbot/Screens/signup_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +19,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
     bool _isPassword = false;
     @override
     Widget build(BuildContext context) {
@@ -43,9 +51,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 15),
                       child: Column(
                         children: [
-                          AuthTextField(hintText: 'Enter your email', icon: Icons.mail, onChanged: (value) {},),
+                          AuthTextField(hintText: 'Enter your email', icon: Icons.mail, onChanged: (value) {}, controller: _emailController,),
                           SizedBox(height: 20,),
-                          AuthTextField(hintText: 'Enter Your Password', icon: Icons.key_outlined, isPassword: _isPassword, onChanged: (value) {}, suffixIcon: IconButton(icon: Icon(_isPassword? Icons.visibility_off : Icons.visibility), onPressed: (){setState(() {
+                          AuthTextField(hintText: 'Enter Your Password', icon: Icons.key_outlined, showPassword: _isPassword,controller: _passwordController, onChanged: (value) {}, suffixIcon: IconButton(icon: Icon(_isPassword? Icons.visibility_off : Icons.visibility), onPressed: (){setState(() {
                             _isPassword = !_isPassword;
                           });},),),
                           Align(alignment: Alignment.centerRight, child: TextButton(onPressed: () { Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPasswordScreen(),)); }, child: Text('Forget password?', style: TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold, fontSize: 16),),),),
@@ -70,7 +78,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             ]
                         )),
                     SizedBox(height: 20,),
-                    ElevatedButton(onPressed: (){}, child: Text('Log In', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll<Color>(Colors.black45)),),
+                    Consumer<AuthServiceProvider>(builder: (context, value, child) => ElevatedButton(onPressed: () async{
+                          try{
+                            if(_emailController.text != '' && _passwordController.text != ''){
+                              User? user = await value.signInwithEmail(_emailController.text, _passwordController.text);
+                              if(user != null){
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Sucessful')));
+                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.signInErrorMessage)));
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('TextField Can\'t be blank')));
+                            }
+
+                          } catch(e){
+
+                          }
+                    },
+
+                      child: Text('Log In', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll<Color>(Colors.black45)),),),
                     Divider(thickness: 2, color: Colors.blueGrey,indent: 100, endIndent: 100,height: 30,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
