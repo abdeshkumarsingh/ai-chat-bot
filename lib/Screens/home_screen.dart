@@ -1,10 +1,18 @@
 import 'package:ai_chatbot/Components/home_screen_card.dart';
+import 'package:ai_chatbot/Screens/about_us.dart';
+import 'package:ai_chatbot/Screens/gemini_screen.dart';
 import 'package:ai_chatbot/Screens/login_screen.dart';
+import 'package:ai_chatbot/Screens/profile_screen.dart';
+import 'package:ai_chatbot/Screens/setting_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  static String id = 'homeScreen';
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -14,38 +22,80 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('AJUTOR', style: TextStyle(fontWeight: FontWeight.bold),), leading: IconButton(onPressed: (){}, icon: Icon(Icons.arrow_back_ios)),),
-      body: Padding(
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
+      // backgroundColor: Theme.of(context).colorScheme.primary,
+      appBar: AppBar(
+        title: const Text(
+          'AJUTOR',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.9,
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                 HomeScreenCard(cardName: 'ChatGPT', logoPath: 'assets/images/chatgpt-logo.png', onTap: (){print('button 1 clicked');}),
-                HomeScreenCard(cardName: 'Gemini', logoPath: 'assets/images/gemini-logo.png', onTap: (){print('button 2 clicked');}),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    HomeScreenCard(
+                      cardName: 'ChatGPT',
+                      logoPath: Image.asset('assets/images/chatgpt-logo.png', height: 80,),
+                      onTap: () {},
+                    ),
+                    HomeScreenCard(
+                      cardName: 'Gemini',
+                      logoPath: Image.asset('assets/images/gemini-logo.png', height: 80,),
+                      onTap: () {
+                        Navigator.pushNamed(context, GeminiScreen.id);
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    HomeScreenCard(
+                      cardName: 'Profile',
+                      logoPath: const Icon(Icons.person, size: 80,),
+                      onTap: () {
+                        Navigator.pushNamed(context, ProfileScreen.id);
+                      },
+                    ),
+                    HomeScreenCard(
+                      cardName: 'Setting',
+                      logoPath: const Icon(Icons.settings,size: 80,),
+                      onTap: () {
+                        Navigator.pushNamed(context, SettingScreen.id);
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    HomeScreenCard(
+                      cardName: 'About Us',
+                      logoPath: const Icon(Icons.question_mark_rounded, size: 80,),
+                      onTap: () {
+                        Navigator.pushNamed(context, AboutUs.id);
+                      },
+                    ),
+                    HomeScreenCard(
+                      cardName: 'Logout',
+                      logoPath: const Icon(Icons.logout, size: 80,),
+                      onTap: () {
+                        FirebaseAuth.instance.signOut();
+                        Navigator.pushReplacementNamed(context, LoginScreen.id);
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                HomeScreenCard(cardName: 'Community', logoPath: 'assets/images/group.png', onTap: (){}),
-                HomeScreenCard(cardName: 'Profile', logoPath: 'assets/images/profile.png', onTap: (){}),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                HomeScreenCard(cardName: 'About Us', logoPath: 'assets/images/about.png', onTap: (){}),
-                HomeScreenCard(cardName: 'Logout', logoPath: 'assets/images/logout.png', onTap: (){
-                  FirebaseAuth.instance.signOut();
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen(),));
-                }),
-              ],
-            )
-          ],
+          ),
         ),
       ),
     );

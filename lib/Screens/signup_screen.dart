@@ -2,6 +2,7 @@ import 'package:ai_chatbot/Clipper/AuthPageClipper.dart';
 import 'package:ai_chatbot/Provider/auth_service_provider.dart';
 import 'package:ai_chatbot/Screens/home_screen.dart';
 import 'package:ai_chatbot/Screens/login_screen.dart';
+import 'package:ai_chatbot/contants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
+  static String id = 'signupScreen';
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -30,6 +32,7 @@ class _SignupScreenState extends State<SignupScreen> {
         backgroundColor: Color(0xFF465D82),
         body: SafeArea(
           child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Stack(
               children: [
                 ClipPath(
@@ -77,7 +80,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 style: TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen(),));
+                                  Navigator.pushNamed(context, LoginScreen.id);
                                   },
                               )
                             ]
@@ -89,7 +92,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                           if(user != null){
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Welcome SignUp Sucessful')));
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(),));
+                            Navigator.pushNamed(context, HomeScreen.id);
                             _emailController.clear();
                             _passwordController.clear();
                             _userNameController.clear();
@@ -105,11 +108,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                       child: Text(
                         'Sign Up',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                        style: kMainButtonTextStyle,
                       ),
-                      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll<Color>(Colors.black45)),),),
+                      style: kMainButtonStyle),),
                     Divider(thickness: 2, color: Colors.blueGrey,indent: 100, endIndent: 100,height: 30,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

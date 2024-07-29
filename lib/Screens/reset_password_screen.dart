@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
+  static String id = 'resetPwdScreen';
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();

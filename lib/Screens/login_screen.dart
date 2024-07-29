@@ -13,12 +13,21 @@ import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+  static String id = 'loginScreen';
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _passwordController.dispose();
+    _emailController.dispose();
+  }
+
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
     bool _isPassword = false;
@@ -28,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Color(0xFF465D82),
         body: SafeArea(
           child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Stack(
               children: [
                 ClipPath(
@@ -60,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                       ),
                     ),
-
                     SizedBox(height: 20,),
                     RichText(
                         text: TextSpan(
@@ -72,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextStyle(color: Colors.lightBlue, fontWeight: FontWeight.bold),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignupScreen(),));
+                                    Navigator.pushNamed(context, SignupScreen.id);
                                   },
                               )
                             ]
@@ -84,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               User? user = await value.signInwithEmail(_emailController.text, _passwordController.text);
                               if(user != null){
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Login Sucessful')));
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                                Navigator.pushReplacementNamed(context, HomeScreen.id);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.signInErrorMessage)));
                               }
@@ -96,7 +105,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           }
                     },
-
                       child: Text('Log In', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),), style: ButtonStyle(backgroundColor: WidgetStatePropertyAll<Color>(Colors.black45)),),),
                     Divider(thickness: 2, color: Colors.blueGrey,indent: 100, endIndent: 100,height: 30,),
                     Row(

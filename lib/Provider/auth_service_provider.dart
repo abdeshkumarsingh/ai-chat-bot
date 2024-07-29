@@ -1,3 +1,4 @@
+import 'package:ai_chatbot/Model/user_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,7 @@ class AuthServiceProvider with ChangeNotifier{
   final _firestore = FirebaseFirestore.instance;
   bool _isSamePassword = true;
   bool _isErrorMessage = false;
+  String? _username;
   late String _signInErrorMessage;
   late String _signUpErrorMessage;
   late String _resetPasswordMessage;
@@ -65,6 +67,7 @@ class AuthServiceProvider with ChangeNotifier{
       // set error message to variable
       _isErrorMessage = true;
       _signUpErrorMessage = e.message.toString();
+      notifyListeners();
       return null;
     }
   }
@@ -89,6 +92,7 @@ class AuthServiceProvider with ChangeNotifier{
     } on FirebaseException catch(e){
       _isErrorMessage = true;
       _signInErrorMessage = e.message.toString();
+      notifyListeners();
       return null;
     }
 
@@ -119,7 +123,11 @@ class AuthServiceProvider with ChangeNotifier{
     }
   }
 
-
-
+  Future<UserModel> getUserModel() async{
+    var snap = await FirebaseFirestore.instance.collection('Users').doc(FirebaseAuth.instance.currentUser!.uid).get();
+    UserModel user = UserModel.fromJson(snap.data() as Map<String, dynamic>);
+    _username = user.userName;
+    return user;
+  }
 
 }

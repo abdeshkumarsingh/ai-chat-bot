@@ -1,7 +1,9 @@
+import 'package:ai_chatbot/contants.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreenCard extends StatelessWidget {
-  String logoPath;
+  Widget logoPath;
   String cardName;
   GestureTapCallback onTap;
 
@@ -15,14 +17,14 @@ class HomeScreenCard extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.4,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(25),
-                color: Color(0xFF3B4C68)
+                color: Theme.of(context).colorScheme.primary,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(logoPath, height: 80,),
+                logoPath,
                 SizedBox(height: 16,),
-                Text(cardName, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Roboto Slab'),)
+                Text(cardName, style: kCardTextStyle)
               ],
             ),
           ),
